@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. Importe o ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../services/api';
@@ -13,12 +13,19 @@ import { ApiService } from '../../services/api';
 export class HomeComponent implements OnInit {
   products: any[] = [];
 
-  constructor(private apiService: ApiService) {}
+  // 2. Injete o cdr no construtor
+  constructor(
+    private apiService: ApiService, 
+    private cdr: ChangeDetectorRef 
+  ) {}
 
   ngOnInit() {
     this.apiService.getProducts().subscribe({
-      next: (data) => this.products = data,
-      error: (err) => console.error(err)
+      next: (data) => {
+        this.products = data;
+        this.cdr.detectChanges(); // 3. Força o Angular a pintar os produtos na tela na hora!
+      },
+      error: (err) => console.error('Erro ao buscar produtos:', err)
     });
   }
 }
